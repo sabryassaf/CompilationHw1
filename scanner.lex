@@ -39,4 +39,7 @@ continue                            return CONTINUE;
 {letter}+(0|{letter}|{digit})*      return ID;
 0|({digit}({digit}|0)*)             return NUM;
 (\")                                BEGIN(STRING);
-<STRING>([^\x5c\x0a\x0d\x22]|()        return STRING;   
+<STRING>([^\x5c\x0a\x0d\x22]|((\\)(\\))|((\\)(\"))|((\\)(n))|((\\)(r))|((\\)(t))|((\\)(0))|((\\)x))*(\") {BEGIN(INITIAL); return STRING;}
+<STRING> (\\)(x)(^[0-9a-fA-F]{2})    {printf("Invalid hex escape sequence\n") ;return STRINGERROR;}
+<STRING> 
+%%

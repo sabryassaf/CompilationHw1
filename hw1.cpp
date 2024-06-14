@@ -8,7 +8,7 @@ void showToken(int token);
 int main()
 {
 	int token;
-	while(token = yylex()) {
+	while(token = yylex() && token != 0) {
 		showToken(token);
 	}
 	return 0;
