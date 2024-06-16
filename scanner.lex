@@ -1,6 +1,8 @@
 %{
 #include <stdio.h>
-#include <tokens.hpp>
+#include "tokens.hpp"
+void yyerror();
+void yyendoffile();
 %}
 
 %option yylineno
@@ -13,7 +15,7 @@ whitespace	  ([\t\n\r ])
 
 %%
 int                                 return INT;
-Byte                                return BYTE;
+byte                                return BYTE;
 b                                   return B;
 bool                                return BOOL;
 and                                 return AND;
@@ -31,15 +33,27 @@ continue                            return CONTINUE;
 (\()                                return LPAREN;
 (\))                                return RPAREN;
 (\{)                                return LBRACE;
-(\})                                return RBRACe;
+(\})                                return RBRACE;
 (=)                                 return ASSIGN;
 (==) | (!=) | (<) | (>) | (<=) | (>=) return RELOP;
-(+) | (-) | (*) | (/)               return BINOP;
-"//" ([^\x0a\x0d])*                 return COMMENT;    
+(\+) | (\-) | (\*) | (\/)           return BINOP;
+\/\/.*                              return COMMENT;    
 {letter}+(0|{letter}|{digit})*      return ID;
 0|({digit}({digit}|0)*)             return NUM;
 (\")                                BEGIN(STRING);
-<STRING>([^\x5c\x0a\x0d\x22]|((\\)(\\))|((\\)(\"))|((\\)(n))|((\\)(r))|((\\)(t))|((\\)(0))|((\\)x))*(\") {BEGIN(INITIAL); return STRING;}
-<STRING> (\\)(x)(^[0-9a-fA-F]{2})    {printf("Invalid hex escape sequence\n") ;return STRINGERROR;}
-<STRING> 
+<STRING>([^\x5c\x0a\x0d\x22]|((\\)(\\))|((\\)(\"))|((\\)(n))|((\\)(r))|((\\)(t))|((\\)(0))|((\\)x))*(\") {BEGIN(INITIAL);
+                                                                                            yytext[yyleng-1] = 0;
+                                                                                            return STRING;}
+<STRING><<EOF>>                     yyendoffile();
+<STRING>([^(\")])*((\")?)                yyerror();
+.                                  return STRING;
 %%
+
+yyendoffile() {
+    fprintf("Error unclosed string\n");
+    exit(0);
+}
+
+yyerror() {
+    fprintf("Error undefined escape sequence %s\n", yytext);
+}

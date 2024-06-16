@@ -3,13 +3,20 @@
 #include <stdio.h>
 
 extern int yylex();
-void showToken(int token);
 
 int main()
 {
 	int token;
 	while(token = yylex() && token != 0) {
-		showToken(token);
+		std::cout << "yytext: " << yytext << std::endl;
+		
+		if (token == STRING) {
+			std::cout << "STRING: " << yytext << std::endl;
+		} else if (token == STRINGERROR) {
+			std::cout << "STRINGERROR: " << yytext << std::endl;
+		} else {
+			std::cout << "TOKEN: " << token << std::endl;
+		}
 	}
 	return 0;
 }
