@@ -29,7 +29,9 @@
     ID = 26,
     NUM = 27,
     STRING = 28,
-    STRINGERROR = 29
+    STRINGERROR = 29;
+    ENDOFFILE = 30;
+    WRONGSTRING = 31;
   };
   extern int yylineno;
   extern char* yytext;
