@@ -7,7 +7,7 @@ extern int yylex();
 int main()
 {
 	int token;
-	while(token = yylex() && token != 0) {
+	while((token = yylex()) && token != 0) {
 		std::cout << "yytext: " << yytext << std::endl;
 		
 		if (token == STRING) {

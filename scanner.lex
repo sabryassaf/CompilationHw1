@@ -49,11 +49,11 @@ continue                            return CONTINUE;
 .                                  return STRING;
 %%
 
-yyendoffile() {
-    fprintf("Error unclosed string\n");
+void yyendoffile() {
+    printf("Error unclosed string\n");
     exit(0);
 }
 
-yyerror() {
-    fprintf("Error undefined escape sequence %s\n", yytext);
+void yyerror() {
+    printf("Error undefined escape sequence %s\n", yytext);
 }
