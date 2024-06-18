@@ -28,7 +28,7 @@
     COMMENT = 25,
     ID = 26,
     NUM = 27,
-    STRING = 28,
+    STRINGEND = 28,
     STRINGERROR = 29,
     ENDOFFILE = 30,
     UNDEFINEDSTRING = 31,
@@ -36,7 +36,9 @@
     WHITESPACE = 33,
     ILLEGALESCAPE = 34,
     WORD = 35,
-    ESCAPE = 36
+    ESCAPE = 36,
+    UNCLOSEDSTRING = 37,
+    STRINGSTART = 38
   };
   extern int yylineno;
   extern char* yytext;

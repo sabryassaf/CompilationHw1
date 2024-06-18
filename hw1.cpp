@@ -2,8 +2,21 @@
 #include <iostream>
 #include <stdio.h>
 
-extern int yylex();
-extern char* yytext;
+
+const std::string tokenNames[] = {
+    "", "", "INT", "BYTE", "B", "BOOL", "AND", "OR", "NOT", "TRUE", "FALSE",
+    "RETURN", "IF", "ELSE", "WHILE", "BREAK", "CONTINUE", "SC", "LPAREN",
+    "RPAREN", "LBRACE", "RBRACE", "ASSIGN", "RELOP", "BINOP", "COMMENT", "ID",
+    "NUM", "STRING", "STRINGERROR", "ENDOFFILE", "UNDEFINEDSTRING", "WRONGCHAR",
+    "WHITESPACE", "ILLEGALESCAPE", "WORD", "ESCAPE", "UNCLOSEDSTRING", "STRINGSTART"
+};
+
+std::string getTokenName(int token) {
+    if (token >= 2 && token < sizeof(tokenNames) / sizeof(std::string)) {
+        return tokenNames[token];
+    }
+    return "Invalid token";
+}
 
 char* stripExtraEscapeSequence() {
 	// strip the extra escape sequence
@@ -57,16 +70,6 @@ char* stripExtraEscapeSequence() {
 	return newString;
 }
 
-void checkUndefinedString() {
-	// check if the string is undefined
-	if (yytext[yyleng - 1] == '\n') {
-		printf("Error Unclosed String\n");
-		exit(0);
-	}
-	printf("Error %s\n", yytext);
-	exit(0);
-}
-
 void handleIllegalEscape() {
 	// handle illegal escape sequence
 	char* newString = stripExtraEscapeSequence();
@@ -74,33 +77,52 @@ void handleIllegalEscape() {
 	exit(0);
 }
 
+void handleString() {
+	// continue reading the string until the end of the string, or reaching an error
+	int token;
+	// initiate a new string to hold all of the words concatenated
+	std::string newString = "";
+	while((token = yylex())) {
+		std::cout<<"here1"<<std::endl;
+		if (token == WORD || token == ESCAPE) {
+			// append the word to the new string
+			newString += yytext;
+			continue;
+		}
+		if (token == ILLEGALESCAPE) {
+			handleIllegalEscape();
+		}
+		if (token == UNCLOSEDSTRING) {
+			std::cout << "Error unclosed string" << std::endl;
+			exit(0);
+		}
+		if (token == STRINGEND) {
+			// append the string to the new string
+			break;
+		}
+	}
+
+	// print the new string
+	std::cout << yylineno << " STRING " << newString << std::endl;
+}
+
 void showToken(int token){
-	// check incase of EOF
-	if(token == ENDOFFILE) {
-		// means a line is ended in middle of a string
-		printf("Error Unclosed String\n");
-		exit(0);
-	}
 	if (token == WRONGCHAR) {
-		// means a wrong character is found
-		printf("Error %s\n", yytext);
+		std::cout << "Error " << yytext << std::endl;
 		exit(0);
 	}
-	if (token == UNDEFINEDSTRING) {
-		// means a undefined string is found
-		checkUndefinedString();
+	if (token == STRINGSTART) {
+		handleString();
 		return;
 	}
 	if (token == WHITESPACE) {
 		return;
 	}
-	if (token == ILLEGALESCAPE) {
-		// means a illegal escape sequence is found
-		handleIllegalEscape();
-		return;
+	else {
+		//print the line, token and token value from tokentype
+		std::string tokenName = getTokenName(token);
+		std::cout << yylineno << " " << tokenName << " " << yytext << std::endl;
 	}
-
-	
 }
 int main()
 {

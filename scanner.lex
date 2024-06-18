@@ -11,7 +11,6 @@ whitespace	      ([\t\n\r ])
 escape            \\(x[0-7][0-9A-Fa-f]|\n|\r|\0|\\|\")
 word              ([!#-\[\]-~])
 
-%%
 
 %x STRING
 
@@ -38,20 +37,19 @@ continue                            return CONTINUE;
 (\})                                return RBRACE;
 (=)                                 return ASSIGN;
 (==) | (!=) | (<) | (>) | (<=) | (>=) return RELOP;
-(\+) | (\-) | (\*) | (\/)           return BINOP;
+(\+|\-|\*|\/)           return BINOP;
 \/\/.*                              return COMMENT;    
 {letter}+(0|{letter}|{digit})*      return ID;
 0|({digit}({digit}|0)*)             return NUM;
 
-(\")                                BEGIN(STRING); return STRING;
+(\")                                BEGIN(STRING); return STRINGSTART;
 <STRING>{word}*                     return WORD;
 <STRING>(\\)x[^0-9A-Fa-f]{2}        return ILLEGALESCAPE;
 <STRING>(\\)[^\t\r\n\0\"\x\\]       return ILLEGALESCAPE;
 <STRING>{escape}                    return ESCAPE;
-
 <STRING><<EOF>>                     return ENDOFFILE;
-<STRING>([^(\")])*((\")?)           return UNDEFINEDSTRING;
-<STRING>[\n\r]                      return ENDOFFILE;
-.                                   return WRONGCHAR;
+<STRING>[\n\r]                      return UNCLOSEDSTRING;
+<STRING>(\")                        BEGIN(INITIAL); return STRINGEND;
 ({whitespace})+                     return WHITESPACE;
+.                                   return WRONGCHAR;
 %%
