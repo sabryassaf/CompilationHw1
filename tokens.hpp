@@ -29,12 +29,13 @@
     ID = 26,
     NUM = 27,
     STRING = 28,
-    STRINGERROR = 29;
-    ENDOFFILE = 30;
-    WRONGSTRING = 31;
+    STRINGERROR = 29,
+    ENDOFFILE = 30,
+    UNDEFINEDSTRING = 31,
+    WRONGCHAR = 32
   };
   extern int yylineno;
   extern char* yytext;
-  extern int yyleng;
+  extern unsigned long yyleng;
   extern int yylex();
 #endif /* TOKENS_HPP_ */

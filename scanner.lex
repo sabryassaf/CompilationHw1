@@ -1,8 +1,6 @@
 %{
 #include <stdio.h>
 #include "tokens.hpp"
-void yyerror();
-void yyendoffile();
 %}
 
 %option yylineno
@@ -42,18 +40,8 @@ continue                            return CONTINUE;
 0|({digit}({digit}|0)*)             return NUM;
 (\")                                BEGIN(STRING);
 <STRING>([^\x5c\x0a\x0d\x22]|((\\)(\\))|((\\)(\"))|((\\)(n))|((\\)(r))|((\\)(t))|((\\)(0))|((\\)x))*(\") {BEGIN(INITIAL);
-                                                                                            yytext[yyleng-1] = 0;
                                                                                             return STRING;}
-<STRING><<EOF>>                     yyendoffile();
-<STRING>([^(\")])*((\")?)                yyerror();
-.                                  return STRING;
+<STRING><<EOF>>                     return ENDOFFILE;
+<STRING>([^(\")])*((\")?)           return UNDEFINEDSTRING;
+.                                   return WRONGCHAR;
 %%
-
-void yyendoffile() {
-    printf("Error unclosed string\n");
-    exit(0);
-}
-
-void yyerror() {
-    printf("Error undefined escape sequence %s\n", yytext);
-}
