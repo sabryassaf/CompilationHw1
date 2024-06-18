@@ -32,7 +32,11 @@
     STRINGERROR = 29,
     ENDOFFILE = 30,
     UNDEFINEDSTRING = 31,
-    WRONGCHAR = 32
+    WRONGCHAR = 32,
+    WHITESPACE = 33,
+    ILLEGALESCAPE = 34,
+    WORD = 35,
+    ESCAPE = 36
   };
   extern int yylineno;
   extern char* yytext;

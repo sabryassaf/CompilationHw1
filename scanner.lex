@@ -7,7 +7,11 @@
 %option noyywrap
 digit   		  ([1-9])
 letter  		  ([a-zA-Z])
-whitespace	  ([\t\n\r ])
+whitespace	      ([\t\n\r ])
+escape            \\(x[0-7][0-9A-Fa-f]|\n|\r|\0|\\|\")
+word              ([!#-\[\]-~])
+
+%%
 
 %x STRING
 
@@ -38,10 +42,16 @@ continue                            return CONTINUE;
 \/\/.*                              return COMMENT;    
 {letter}+(0|{letter}|{digit})*      return ID;
 0|({digit}({digit}|0)*)             return NUM;
-(\")                                BEGIN(STRING);
-<STRING>([^\x5c\x0a\x0d\x22]|((\\)(\\))|((\\)(\"))|((\\)(n))|((\\)(r))|((\\)(t))|((\\)(0))|((\\)x))*(\") {BEGIN(INITIAL);
-                                                                                            return STRING;}
+
+(\")                                BEGIN(STRING); return STRING;
+<STRING>{word}*                     return WORD;
+<STRING>(\\)x[^0-9A-Fa-f]{2}        return ILLEGALESCAPE;
+<STRING>(\\)[^\t\r\n\0\"\x\\]       return ILLEGALESCAPE;
+<STRING>{escape}                    return ESCAPE;
+
 <STRING><<EOF>>                     return ENDOFFILE;
 <STRING>([^(\")])*((\")?)           return UNDEFINEDSTRING;
+<STRING>[\n\r]                      return ENDOFFILE;
 .                                   return WRONGCHAR;
+({whitespace})+                     return WHITESPACE;
 %%
