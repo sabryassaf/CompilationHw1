@@ -18,62 +18,52 @@ std::string getTokenName(int token) {
     return "Invalid token";
 }
 
-char* stripExtraEscapeSequence() {
+std::string stripExtraEscapeSequence(std::string stringToStrip) {
 	// strip the extra escape sequence
-	char* newString = new char[yyleng];
-	int j = 0;
-	for (int i = 0; i < yyleng; i++) {
-		if (yytext[i] == '\\') {
-			if (yytext[i + 1] == 'n') {
-				newString[j] = '\n';
-				j++;
+	int len = stringToStrip.length();
+	std::string newString = "";
+	for (int i = 0; i < len; i++) {
+		if (stringToStrip[i] == '\\') {
+			if (stringToStrip[i + 1] == 'n') {
+				newString += '\n';
 				i++;
-			} else if (yytext[i + 1] == 't') {
-				newString[j] = '\t';
-				j++;
+			} else if (stringToStrip[i + 1] == 't') {
+				newString += '\t';
 				i++;
-			} else if (yytext[i + 1] == 'r') {
-				newString[j] = '\r';
-				j++;
+			} else if (stringToStrip[i + 1] == 'r') {
+				newString += '\r';
 				i++;
-			} else if (yytext[i + 1] == '0') {
-				newString[j] = '\0';
-				j++;
+			} else if (stringToStrip[i + 1] == '0') {
+				newString += '\0';
 				i++;
-			} else if (yytext[i + 1] == '\\') {
-				newString[j] = '\\';
-				j++;
+			} else if (stringToStrip[i + 1] == '\\') {
+				newString += '\\';
 				i++;
-			} else if (yytext[i + 1] == '\"') {
-				newString[j] = '\"';
-				j++;
+			} else if (stringToStrip[i + 1] == '\"') {
+				newString += '\"';
 				i++;
-			} else if (yytext[i + 1] == 'x') {
+			} else if (stringToStrip[i + 1] == 'x') {
 				// hexa decimal
 				char hex[3];
-				hex[0] = yytext[i + 2];
-				hex[1] = yytext[i + 3];
+				hex[0] = stringToStrip[i + 2];
+				hex[1] = stringToStrip[i + 3];
 				hex[2] = '\0';
-				newString[j] = (char)strtol(hex, NULL, 16);
-				j++;
+				newString += (char)strtol(hex, NULL, 16);
 				i += 3;
 			} else {
-				newString[j] = yytext[i];
-				j++;
+				newString += stringToStrip[i];
 			}
 		} else {
-			newString[j] = yytext[i];
-			j++;
+			newString += stringToStrip[i];
 		}
 	}
-	newString[j] = '\0';
 	return newString;
 }
 
 void handleIllegalEscape() {
 	// handle illegal escape sequence
-	char* newString = stripExtraEscapeSequence();
-	printf("Error undefined escape squence %s\n", newString);
+	std::string newString = stripExtraEscapeSequence(yytext);
+	std::cout << "Error undefined escape squence " << newString << std::endl;
 	exit(0);
 }
 
@@ -83,7 +73,6 @@ void handleString() {
 	// initiate a new string to hold all of the words concatenated
 	std::string newString = "";
 	while((token = yylex())) {
-		std::cout<<"here1"<<std::endl;
 		if (token == WORD || token == ESCAPE) {
 			// append the word to the new string
 			newString += yytext;
@@ -103,6 +92,7 @@ void handleString() {
 	}
 
 	// print the new string
+	std::string strippedString = stripExtraEscapeSequence(newString);
 	std::cout << yylineno << " STRING " << newString << std::endl;
 }
 
