@@ -67,13 +67,23 @@ std::string stripExtraEscapeSequence(const std::string& stringToStrip) {
     }
     return newString;
 }
+std::string stripExtraIllegalEscapeSequence(const std::string& stringToStrip) {
+    //remove the first letter from strintToStrip
+    std::cout<<stringToStrip<<std::endl;
+    std::string newString = stringToStrip.substr(1);
+    // switch(newString[0]):
+    //     case 'x':
+
+    return newString;
+
+}
 
 void handleIllegalEscape() {
 	// handle illegal escape sequence
-	std::string newString = yytext+1;
-    if (newString[yyleng-2] == '\"') {
-        newString = newString.substr(0, yyleng-2);
-    }
+    std::string newString = stripExtraIllegalEscapeSequence(yytext);
+    // if (newString[yyleng-2] == '\"') {
+    //     newString = newString.substr(0, yyleng-2);
+    // }
 	std::cout << "Error undefined escape sequence " << newString << std::endl;
 	exit(0);
 }
