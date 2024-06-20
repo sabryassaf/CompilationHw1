@@ -69,7 +69,6 @@ std::string stripExtraEscapeSequence(const std::string& stringToStrip) {
 }
 std::string stripExtraIllegalEscapeSequence(const std::string& stringToStrip) {
     //remove the first letter from strintToStrip
-    std::cout<<stringToStrip<<std::endl;
     std::string newString = stringToStrip.substr(1);
     if (newString[newString.size()-1] == '\"') {
         newString = newString.substr(0, newString.size()-1);
