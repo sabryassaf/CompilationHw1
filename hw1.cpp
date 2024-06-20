@@ -51,7 +51,11 @@ std::string stripExtraEscapeSequence(const std::string& stringToStrip) {
                         hex[0] = stringToStrip[i + 2];
                         hex[1] = stringToStrip[i + 3];
                         hex[2] = '\0';
-                        newString += (char)strtol(hex, NULL, 16);
+                        char tmpHolder = (char)strtol(hex, NULL, 16);
+                        if (tmpHolder == '\0'){
+                            return newString;
+                        }
+                        newString += tmpHolder;
                         i += 3; 
                     }
                     break;
