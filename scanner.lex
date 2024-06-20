@@ -45,7 +45,7 @@ continue                            return CONTINUE;
 (\")                                BEGIN(STRING); return STRINGSTART;
 <STRING>{word}*                     return WORD;
 <STRING>{escape}                    return ESCAPE;
-<STRING>\\x[8-9A-Fa-f][0-9A-Fa-f]   return ILLEGALESCAPE;
+<STRING>\\x[8-9A-Fa-f][0-9A-Za-z]   return ILLEGALESCAPE;
 <STRING>\\x[^0-9A-Fa-f]+            return ILLEGALESCAPE;
 <STRING>\\x[0-7][^0-9A-Fa-f]        return ILLEGALESCAPE;
 <STRING>\\x.{0,1}                    return ILLEGALESCAPE;
