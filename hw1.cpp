@@ -102,7 +102,7 @@ void handleString() {
 		if (token == ILLEGALESCAPE) {
 			handleIllegalEscape();
 		}
-		if (token == UNCLOSEDSTRING) {
+		if (token == UNCLOSEDSTRING | token == ENDOFFILE) {
 			std::cout << "Error unclosed string" << std::endl;
 			exit(0);
 		}
