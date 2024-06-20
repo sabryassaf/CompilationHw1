@@ -20,28 +20,31 @@ std::string getTokenName(int token) {
 
 std::string stripExtraEscapeSequence(const std::string& stringToStrip) {
     std::string newString;
-    for (size_t i = 0; i < stringToStrip.size(); ++i) {
+    bool isEscape = false;
+    for (size_t i = 0; i < stringToStrip.size() && !isEscape; ++i) {
         if (stringToStrip[i] == '\\' && i + 1 < stringToStrip.size()) {
             switch (stringToStrip[i + 1]) {
                 case 'n':
                     newString += '\n';
-                    ++i;  // Skip the next character
+                    ++i;  
                     break;
                 case 't':
                     newString += '\t';
-                    ++i;  // Skip the next character
+                    ++i;  
                     break;
                 case '0':
+                    //string terminator
                     newString += '\0';
-                    ++i;  // Skip the next character
+                    ++i;
+                    isEscape = true;  
                     break;
                 case 'r':
                     newString += '\r';
-                    ++i;  // Skip the next character
+                    ++i;  
                     break;
                 case '\"':
                     newString += '\"';
-                    ++i;  // Skip the next character
+                    ++i;  
                     break;
                 case 'x':
                     if (i + 3 < stringToStrip.size()) {
@@ -50,12 +53,12 @@ std::string stripExtraEscapeSequence(const std::string& stringToStrip) {
                         hex[1] = stringToStrip[i + 3];
                         hex[2] = '\0';
                         newString += (char)strtol(hex, NULL, 16);
-                        i += 3;  // Skip the next three characters
+                        i += 3; 
                     }
                     break;
                 case '\\':
                     newString += '\\';
-                    ++i;  // Skip the next character
+                    ++i;  
                     break;
                 default:
                     newString += stringToStrip[i];
