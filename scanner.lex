@@ -36,7 +36,7 @@ continue                            return CONTINUE;
 (\{)                                return LBRACE;
 (\})                                return RBRACE;
 (=)                                 return ASSIGN;
-(==) | (!=) | (<) | (>) | (<=) | (>=) return RELOP;
+==|!=|<|>|<=|>= return RELOP;
 (\+|\-|\*|\/)           return BINOP;
 \/\/.*                              return COMMENT;    
 {letter}+(0|{letter}|{digit})*      return ID;
