@@ -34,8 +34,7 @@ std::string stripExtraEscapeSequence(const std::string& stringToStrip) {
                     break;
                 case '0':
                     //string terminator
-                    newString += '\0';
-                    ++i;
+
                     isEscape = true;  
                     break;
                 case 'r':
