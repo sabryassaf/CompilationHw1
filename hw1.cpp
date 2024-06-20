@@ -92,6 +92,7 @@ void handleString() {
 	int token;
 	// initiate a new string to hold all of the words concatenated
 	std::string newString = "";
+    bool endOfWord = false;
 	while((token = yylex())) {
 		if (token == WORD || token == ESCAPE || token == WHITESPACE) {
 			// append the word to the new string
@@ -106,11 +107,14 @@ void handleString() {
 			exit(0);
 		}
 		if (token == STRINGEND) {
-			// append the string to the new string
+            endOfWord = true;
 			break;
 		}
 	}
-
+    if (!endOfWord) {
+        std::cout << "Error unclosed string" << std::endl;
+        exit(0);
+    }
 	// print the new string
 	std::string strippedString = stripExtraEscapeSequence(newString);
 	std::cout << yylineno << " STRING " << strippedString << std::endl;
