@@ -39,6 +39,10 @@ std::string stripExtraEscapeSequence(const std::string& stringToStrip) {
                     newString += '\r';
                     ++i;  // Skip the next character
                     break;
+                case '\"':
+                    newString += '\"';
+                    ++i;  // Skip the next character
+                    break;
                 case 'x':
                     if (i + 3 < stringToStrip.size()) {
                         char hex[3];
@@ -67,7 +71,6 @@ std::string stripExtraEscapeSequence(const std::string& stringToStrip) {
 void handleIllegalEscape() {
 	// handle illegal escape sequence
 	std::string newString = yytext+1;
-    std::cout <<yytext<<std::endl;
     if (newString[yyleng-2] == '\"') {
         newString = newString.substr(0, yyleng-2);
     }
