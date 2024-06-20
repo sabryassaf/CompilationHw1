@@ -18,46 +18,50 @@ std::string getTokenName(int token) {
     return "Invalid token";
 }
 
-std::string stripExtraEscapeSequence(std::string stringToStrip) {
-	// strip the extra escape sequence
-	int len = stringToStrip.length();
-	std::string newString = "";
-	for (int i = 0; i < len; i++) {
-		if (stringToStrip[i] == '\\') {
-			if (stringToStrip[i + 1] == 'n') {
-				newString += '\n';
-				i++;
-			} else if (stringToStrip[i + 1] == 't') {
-				newString += '\t';
-				i++;
-			} else if (stringToStrip[i + 1] == 'r') {
-				newString += '\r';
-				i++;
-			} else if (stringToStrip[i + 1] == '0') {
-				newString += '\0';
-				i++;
-			} else if (stringToStrip[i + 1] == '\\') {
-				newString += '\\';
-				i++;
-			} else if (stringToStrip[i + 1] == '\"') {
-				newString += '\"';
-				i++;
-			} else if (stringToStrip[i + 1] == 'x') {
-				// hexa decimal
-				char hex[3];
-				hex[0] = stringToStrip[i + 2];
-				hex[1] = stringToStrip[i + 3];
-				hex[2] = '\0';
-				newString += (char)strtol(hex, NULL, 16);
-				i += 3;
-			} else {
-				newString += stringToStrip[i];
-			}
-		} else {
-			newString += stringToStrip[i];
-		}
-	}
-	return newString;
+std::string stripExtraEscapeSequence(const std::string& stringToStrip) {
+    std::string newString;
+    for (size_t i = 0; i < stringToStrip.size(); ++i) {
+        if (stringToStrip[i] == '\\' && i + 1 < stringToStrip.size()) {
+            switch (stringToStrip[i + 1]) {
+                case 'n':
+                    newString += '\n';
+                    ++i;  // Skip the next character
+                    break;
+                case 't':
+                    newString += '\t';
+                    ++i;  // Skip the next character
+                    break;
+                case '0':
+                    newString += '\0';
+                    ++i;  // Skip the next character
+                    break;
+                case 'r':
+                    newString += '\r';
+                    ++i;  // Skip the next character
+                    break;
+                case 'x':
+                    if (i + 3 < stringToStrip.size()) {
+                        char hex[3];
+                        hex[0] = stringToStrip[i + 2];
+                        hex[1] = stringToStrip[i + 3];
+                        hex[2] = '\0';
+                        newString += (char)strtol(hex, NULL, 16);
+                        i += 3;  // Skip the next three characters
+                    }
+                    break;
+                case '\\':
+                    newString += '\\';
+                    ++i;  // Skip the next character
+                    break;
+                default:
+                    newString += stringToStrip[i];
+                    break;
+            }
+        } else {
+            newString += stringToStrip[i];
+        }
+    }
+    return newString;
 }
 
 void handleIllegalEscape() {
@@ -73,12 +77,13 @@ void handleString() {
 	// initiate a new string to hold all of the words concatenated
 	std::string newString = "";
 	while((token = yylex())) {
-		if (token == WORD || token == ESCAPE) {
+		if (token == WORD || token == ESCAPE || token == WHITESPACE) {
 			// append the word to the new string
 			newString += yytext;
 			continue;
 		}
 		if (token == ILLEGALESCAPE) {
+			std::cout << token << std::endl;
 			handleIllegalEscape();
 		}
 		if (token == UNCLOSEDSTRING) {
@@ -93,7 +98,7 @@ void handleString() {
 
 	// print the new string
 	std::string strippedString = stripExtraEscapeSequence(newString);
-	std::cout << yylineno << " STRING " << newString << std::endl;
+	std::cout << yylineno << " STRING " << strippedString << std::endl;
 }
 
 void showToken(int token){
@@ -108,6 +113,10 @@ void showToken(int token){
 	if (token == WHITESPACE) {
 		return;
 	}
+    if (token == COMMENT) {
+        std::string tokenName = getTokenName(token);
+		std::cout << yylineno << " " << tokenName << " //" << std::endl;
+    }
 	else {
 		//print the line, token and token value from tokentype
 		std::string tokenName = getTokenName(token);

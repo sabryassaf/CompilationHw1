@@ -8,7 +8,7 @@
 digit   		  ([1-9])
 letter  		  ([a-zA-Z])
 whitespace	      ([\t\n\r ])
-escape            \\(x[0-7][0-9A-Fa-f]|\n|\r|\0|\\|\")
+escape            \\(x[0-7][0-9A-Fa-f]|n|r|0|\|t|\")
 word              ([!#-\[\]-~])
 
 
@@ -45,11 +45,13 @@ continue                            return CONTINUE;
 (\")                                BEGIN(STRING); return STRINGSTART;
 <STRING>{word}*                     return WORD;
 <STRING>(\\)x[^0-9A-Fa-f]{2}        return ILLEGALESCAPE;
-<STRING>(\\)[^\t\r\n\0\"\x\\]       return ILLEGALESCAPE;
+<STRING>(\\)[^"\\nrt0x]             return ILLEGALESCAPE;
 <STRING>{escape}                    return ESCAPE;
 <STRING><<EOF>>                     return ENDOFFILE;
 <STRING>[\n\r]                      return UNCLOSEDSTRING;
+<STRING>({whitespace})              return WHITESPACE;
 <STRING>(\")                        BEGIN(INITIAL); return STRINGEND;
 ({whitespace})+                     return WHITESPACE;
 .                                   return WRONGCHAR;
 %%
+ 
