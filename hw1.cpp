@@ -66,8 +66,12 @@ std::string stripExtraEscapeSequence(const std::string& stringToStrip) {
 
 void handleIllegalEscape() {
 	// handle illegal escape sequence
-	std::string newString = stripExtraEscapeSequence(yytext);
-	std::cout << "Error undefined escape squence " << newString << std::endl;
+	std::string newString = yytext+1;
+    std::cout <<yytext<<std::endl;
+    if (newString[yyleng-2] == '\"') {
+        newString = newString.substr(0, yyleng-2);
+    }
+	std::cout << "Error undefined escape sequence " << newString << std::endl;
 	exit(0);
 }
 
@@ -83,7 +87,6 @@ void handleString() {
 			continue;
 		}
 		if (token == ILLEGALESCAPE) {
-			std::cout << token << std::endl;
 			handleIllegalEscape();
 		}
 		if (token == UNCLOSEDSTRING) {

@@ -42,6 +42,6 @@
   };
   extern int yylineno;
   extern char* yytext;
-  extern unsigned long yyleng;
+  extern int yyleng;
   extern int yylex();
 #endif /* TOKENS_HPP_ */
